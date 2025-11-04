@@ -751,7 +751,19 @@ N/A</pre
         // When editing is finished (by clicking the button again), we stop listening for input.
         // The visual template is not live-updated anymore as it contains a summary.
         if (isEditable) {
+          // When toggling from editable to not-editable
           targetElement.oninput = null;
+        } else if (visualTargetId === "visualOutputSteps") {
+          // When toggling to editable, only for steps
+          // Special case for live-syncing 'Steps to Reproduce' since it's not a summary
+          const visualElement = document.getElementById(visualTargetId);
+          if (visualElement) {
+            // Start syncing
+            targetElement.oninput = () => {
+              // Use innerText to handle line breaks correctly for <pre> tags
+              visualElement.innerText = targetElement.innerText;
+            };
+          }
         }
 
         // To place cursor at the end of the text
