@@ -134,29 +134,53 @@
             >
               Heading (Title)
             </p>
-            <button
-              onclick="copyToClipboard('outputHeading')"
-              class="copy-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
-              title="Copy to Clipboard"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
+            <div class="flex items-center space-x-2">
+              <button
+                onclick="toggleEdit('outputHeading')"
+                class="edit-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+                title="Edit"
               >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path
-                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-                ></path>
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path
+                    d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                onclick="copyToClipboard('outputHeading')"
+                class="copy-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+                title="Copy to Clipboard"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  ></path>
+                </svg>
+              </button>
+            </div>
           </div>
           <p
             id="outputHeading"
@@ -175,29 +199,53 @@
             >
               Description
             </p>
-            <button
-              onclick="copyToClipboard('outputDescription')"
-              class="copy-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
-              title="Copy to Clipboard"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
+            <div class="flex items-center space-x-2">
+              <button
+                onclick="toggleEdit('outputDescription')"
+                class="edit-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+                title="Edit"
               >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path
-                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-                ></path>
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path
+                    d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                onclick="copyToClipboard('outputDescription')"
+                class="copy-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+                title="Copy to Clipboard"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  ></path>
+                </svg>
+              </button>
+            </div>
           </div>
           <p id="outputDescription" class="text-gray-700 report-section mt-1">
             N/A
@@ -213,29 +261,53 @@
             >
               Observed Behavior
             </p>
-            <button
-              onclick="copyToClipboard('outputObserved')"
-              class="copy-btn text-red-500 hover:text-red-700 transition duration-150 p-1 rounded-full hover:bg-red-100"
-              title="Copy to Clipboard"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
+            <div class="flex items-center space-x-2">
+              <button
+                onclick="toggleEdit('outputObserved', 'visualOutputObserved')"
+                class="edit-btn text-red-500 hover:text-red-700 transition duration-150 p-1 rounded-full hover:bg-red-100"
+                title="Edit"
               >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path
-                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-                ></path>
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path
+                    d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                onclick="copyToClipboard('outputObserved')"
+                class="copy-btn text-red-500 hover:text-red-700 transition duration-150 p-1 rounded-full hover:bg-red-100"
+                title="Copy to Clipboard"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  ></path>
+                </svg>
+              </button>
+            </div>
           </div>
           <p id="outputObserved" class="text-gray-700 report-section mt-1">
             N/A
@@ -251,29 +323,53 @@
             >
               Step to Reproduce
             </p>
-            <button
-              onclick="copyToClipboard('outputSteps')"
-              class="copy-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
-              title="Copy to Clipboard"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
+            <div class="flex items-center space-x-2">
+              <button
+                onclick="toggleEdit('outputSteps', 'visualOutputSteps')"
+                class="edit-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+                title="Edit"
               >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path
-                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-                ></path>
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path
+                    d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                onclick="copyToClipboard('outputSteps')"
+                class="copy-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+                title="Copy to Clipboard"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  ></path>
+                </svg>
+              </button>
+            </div>
           </div>
           <pre
             id="outputSteps"
@@ -292,29 +388,53 @@ N/A</pre
             >
               Expected Behavior
             </p>
-            <button
-              onclick="copyToClipboard('outputExpected')"
-              class="copy-btn text-green-500 hover:text-green-700 transition duration-150 p-1 rounded-full hover:bg-green-100"
-              title="Copy to Clipboard"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="w-4 h-4"
+            <div class="flex items-center space-x-2">
+              <button
+                onclick="toggleEdit('outputExpected', 'visualOutputExpected')"
+                class="edit-btn text-green-500 hover:text-green-700 transition duration-150 p-1 rounded-full hover:bg-green-100"
+                title="Edit"
               >
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                <path
-                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
-                ></path>
-              </svg>
-            </button>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <path
+                    d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                onclick="copyToClipboard('outputExpected')"
+                class="copy-btn text-green-500 hover:text-green-700 transition duration-150 p-1 rounded-full hover:bg-green-100"
+                title="Copy to Clipboard"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="w-4 h-4"
+                >
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path
+                    d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                  ></path>
+                </svg>
+              </button>
+            </div>
           </div>
           <p id="outputExpected" class="text-gray-700 report-section mt-1">
             N/A
@@ -611,6 +731,39 @@ N/A</pre
       };
 
       /**
+       * Toggles the editable state of a content element and syncs it with a visual element.
+       * @param {string} targetId The ID of the element to make editable.
+       * @param {string} [visualTargetId] The optional ID of the visual template element to sync with.
+       */
+      window.toggleEdit = function (targetId, visualTargetId = null) {
+        const targetElement = document.getElementById(targetId);
+        const isEditable = targetElement.isContentEditable;
+
+        targetElement.contentEditable = !isEditable;
+        targetElement.focus();
+
+        // Add/remove styling to indicate edit mode
+        targetElement.classList.toggle("ring-2", !isEditable);
+        targetElement.classList.toggle("ring-indigo-300", !isEditable);
+        targetElement.classList.toggle("p-1", !isEditable);
+        targetElement.classList.toggle("rounded", !isEditable);
+
+        // When editing is finished (by clicking the button again), we stop listening for input.
+        // The visual template is not live-updated anymore as it contains a summary.
+        if (isEditable) {
+          targetElement.oninput = null;
+        }
+
+        // To place cursor at the end of the text
+        const range = document.createRange();
+        range.selectNodeContents(targetElement);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      };
+
+      /**
        * Downloads the visual output container as a PNG image using html2canvas.
        */
       window.downloadVisualReport = async function () {
@@ -750,10 +903,20 @@ N/A</pre
               description:
                 "A clear description of the current, incorrect behavior.",
             },
+            observedBehaviorSummary: {
+              type: "STRING",
+              description:
+                "A very short summary of the observed behavior (15-20 words).",
+            },
             expectedBehavior: {
               type: "STRING",
               description:
                 "A clear description of the correct, expected behavior.",
+            },
+            expectedBehaviorSummary: {
+              type: "STRING",
+              description:
+                "A very short summary of the expected behavior (15-20 words).",
             },
           },
           required: [
@@ -762,6 +925,8 @@ N/A</pre
             "stepsToReproduce",
             "observedBehavior",
             "expectedBehavior",
+            "observedBehaviorSummary",
+            "expectedBehaviorSummary",
           ],
           propertyOrdering: [
             "heading",
@@ -769,6 +934,8 @@ N/A</pre
             "stepsToReproduce",
             "observedBehavior",
             "expectedBehavior",
+            "observedBehaviorSummary",
+            "expectedBehaviorSummary",
           ],
         };
 
@@ -830,6 +997,12 @@ N/A</pre
             const sanitizedExpected = sanitizeText(
               bugReport.expectedBehavior || "N/A"
             );
+            const observedSummary = sanitizeText(
+              bugReport.observedBehaviorSummary || sanitizedObserved
+            );
+            const expectedSummary = sanitizeText(
+              bugReport.expectedBehaviorSummary || sanitizedExpected
+            );
 
             // Update UI with data (Text Output)
             outputHeading.textContent = sanitizedHeading;
@@ -838,10 +1011,12 @@ N/A</pre
             outputObserved.textContent = sanitizedObserved;
             outputExpected.textContent = sanitizedExpected;
 
-            // Update UI with data (Visual Template Output)
-            visualOutputObserved.textContent = sanitizedObserved;
-            visualOutputSteps.textContent = rawSteps; // Use raw steps to keep line breaks
-            visualOutputExpected.textContent = sanitizedExpected;
+            // Update UI with summarized data (Visual Template Output)
+            visualOutputObserved.textContent = observedSummary;
+            // For steps, we will still show the full text as summarizing a list can be awkward.
+            // It's already in a list format which is scannable.
+            visualOutputSteps.textContent = rawSteps;
+            visualOutputExpected.textContent = expectedSummary;
 
             setUiState(false);
             return; // Success, exit function
