@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QA Bug Reporting Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap");
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f3f4f6; /* Slightly darker background for better contrast */
+      }
+      .report-section {
+        white-space: pre-wrap; /* Preserve formatting and line breaks from the LLM output */
+      }
+      .output-card {
+        transition: all 0.2s ease-in-out;
+      }
+      .output-card:hover {
+        transform: translateY(-1px);
+      }
+      .visual-card {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        border-radius: 0.75rem; /* rounded-xl */
+        /* Added explicit white background for better html2canvas output */
+        background-color: #ffffff;
+      }
+    </style>
+  </head>
+  <body class="p-4 md:p-8 min-h-screen bg-slate-50">
+    <div
+      class="max-w-7xl mx-auto bg-white shadow-2xl rounded-xl p-6 md:p-10 border-t-8 border-indigo-600"
+    >
+      <h1
+        class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 flex items-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="w-8 h-8 mr-3 text-indigo-600"
+        >
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M12 16V8"></path>
+          <path d="M15 13l-3 3-3-3"></path>
+        </svg>
+        QA Bug Reporting Tool
+      </h1>
+      <p class="text-gray-500 mb-8 text-lg">
+        Enter your raw bug description, and let AI structure the formal report.
+      </p>
+
+      <div class="mb-8">
+        <label
+          for="bugInput"
+          class="block text-xl font-semibold text-gray-700 mb-3"
+          >Raw Bug Description</label
+        >
+        <textarea
+          id="bugInput"
+          rows="4"
+          placeholder='Example: "While testing the game Alien Shooter, we observed that when the user presses the jump button twice quickly, the character flies instead of double-jumping, which is incorrect. It should only allow a higher jump." '
+          class="w-full p-4 border-2 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 shadow-sm text-gray-800 focus:shadow-md"
+        ></textarea>
+      </div>
+
+      <div class="mb-8 flex space-x-4">
+        <button
+          id="generateBtn"
+          onclick="generateBugReport()"
+          class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out shadow-xl transform hover:scale-[1.005] hover:shadow-2xl flex items-center justify-center disabled:opacity-50"
+        >
+          <svg
+            id="generateIcon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-5 h-5 mr-2"
+          >
+            <path d="M12 11V19"></path>
+            <path d="M8 15h8"></path>
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          <svg
+            id="loadingSpinner"
+            class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          Generate Bug Report
+        </button>
+
+        <button
+          id="resetBtn"
+          onclick="resetForm()"
+          class="w-32 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-3 rounded-lg transition duration-300 ease-in-out shadow-xl transform hover:scale-[1.005] hover:shadow-2xl flex items-center justify-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="w-5 h-5"
+          >
+            <path
+              d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+            ></path>
+          </svg>
+          Reset
+        </button>
+      </div>
+
+      <div
+        id="errorMessage"
+        class="hidden mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg"
+        role="alert"
+      >
+        An error occurred: <span id="errorText"></span>
+      </div>
+
+      <div id="outputContainer" class="mt-10">
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">
+          Structured Bug Report
+        </h2>
+
+        <div
+          class="output-card bg-gray-50 p-5 rounded-xl mb-6 shadow-sm hover:shadow-md flex flex-col"
+        >
+          <div class="flex justify-between items-center mb-1">
+            <p
+              class="text-sm font-medium text-indigo-600 uppercase tracking-wider"
+            >
+              Heading (Title)
+            </p>
+            <button
+              onclick="copyToClipboard('outputHeading')"
+              class="copy-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+              title="Copy to Clipboard"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="w-4 h-4"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path
+                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <p
+            id="outputHeading"
+            class="text-xl font-bold text-gray-800 report-section mt-1"
+          >
+            N/A
+          </p>
+        </div>
+
+        <div
+          class="output-card bg-gray-50 p-5 rounded-xl mb-6 shadow-sm hover:shadow-md flex flex-col"
+        >
+          <div class="flex justify-between items-center mb-1">
+            <p
+              class="text-sm font-medium text-indigo-600 uppercase tracking-wider"
+            >
+              Description
+            </p>
+            <button
+              onclick="copyToClipboard('outputDescription')"
+              class="copy-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+              title="Copy to Clipboard"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="w-4 h-4"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path
+                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <p id="outputDescription" class="text-gray-700 report-section mt-1">
+            N/A
+          </p>
+        </div>
+
+        <div
+          class="output-card bg-red-50 p-5 rounded-xl mb-6 shadow-sm hover:shadow-md border-l-4 border-red-500 flex flex-col"
+        >
+          <div class="flex justify-between items-center mb-1">
+            <p
+              class="text-sm font-medium text-red-600 uppercase tracking-wider"
+            >
+              Observed Behavior
+            </p>
+            <button
+              onclick="copyToClipboard('outputObserved')"
+              class="copy-btn text-red-500 hover:text-red-700 transition duration-150 p-1 rounded-full hover:bg-red-100"
+              title="Copy to Clipboard"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="w-4 h-4"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path
+                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <p id="outputObserved" class="text-gray-700 report-section mt-1">
+            N/A
+          </p>
+        </div>
+
+        <div
+          class="output-card bg-gray-50 p-5 rounded-xl mb-6 shadow-sm hover:shadow-md flex flex-col"
+        >
+          <div class="flex justify-between items-center mb-1">
+            <p
+              class="text-sm font-medium text-indigo-600 uppercase tracking-wider"
+            >
+              Step to Reproduce
+            </p>
+            <button
+              onclick="copyToClipboard('outputSteps')"
+              class="copy-btn text-indigo-500 hover:text-indigo-700 transition duration-150 p-1 rounded-full hover:bg-indigo-100"
+              title="Copy to Clipboard"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="w-4 h-4"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path
+                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <pre
+            id="outputSteps"
+            class="bg-white p-3 border border-gray-200 rounded-md text-gray-800 text-sm report-section mt-1"
+          >
+N/A</pre
+          >
+        </div>
+
+        <div
+          class="output-card bg-green-50 p-5 rounded-xl mb-6 shadow-sm hover:shadow-md border-l-4 border-green-500 flex flex-col"
+        >
+          <div class="flex justify-between items-center mb-1">
+            <p
+              class="text-sm font-medium text-green-600 uppercase tracking-wider"
+            >
+              Expected Behavior
+            </p>
+            <button
+              onclick="copyToClipboard('outputExpected')"
+              class="copy-btn text-green-500 hover:text-green-700 transition duration-150 p-1 rounded-full hover:bg-green-100"
+              title="Copy to Clipboard"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="w-4 h-4"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path
+                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                ></path>
+              </svg>
+            </button>
+          </div>
+          <p id="outputExpected" class="text-gray-700 report-section mt-1">
+            N/A
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-10 pt-6 border-t border-gray-200">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-bold text-gray-900">
+            Visual Output Template
+          </h2>
+          <button
+            id="downloadBtn"
+            onclick="downloadVisualReport()"
+            class="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 flex items-center disabled:opacity-50"
+          >
+            <svg
+              class="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              ></path>
+            </svg>
+            Download Image
+          </button>
+        </div>
+
+        <div id="visualContainer" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            id="visualObserved"
+            class="visual-card bg-red-50 rounded-xl p-5 flex flex-col justify-between items-center text-center h-80"
+          >
+            <div
+              class="flex-1 overflow-y-auto w-full p-2 border border-red-300 bg-white rounded-lg shadow-inner flex flex-col"
+            >
+              <p
+                class="text-sm font-bold text-red-700 uppercase mb-1 border-b pb-1 border-red-200"
+              >
+                Observed Behavior
+              </p>
+              <p
+                id="visualOutputObserved"
+                class="text-sm text-gray-800 mt-1 report-section flex-1 overflow-y-auto"
+              >
+                N/A
+              </p>
+            </div>
+            <div
+              class="h-1/3 w-full flex flex-col items-center justify-center pt-2"
+            >
+              <svg
+                viewBox="0 0 100 100"
+                class="w-20 h-20 text-red-600 fill-current"
+              >
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  class="fill-red-400 stroke-red-600 stroke-2"
+                />
+                <g class="stroke-red-800 stroke-5" stroke-linecap="round">
+                  <line x1="30" y1="35" x2="45" y2="50" />
+                  <line x1="45" y1="35" x2="30" y2="50" />
+                  <line x1="55" y1="35" x2="70" y2="50" />
+                  <line x1="70" y1="35" x2="55" y2="50" />
+                </g>
+                <path
+                  d="M 30 70 Q 50 60, 70 70"
+                  class="fill-none stroke-red-800 stroke-4"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <div
+            id="visualSteps"
+            class="visual-card bg-indigo-50 rounded-xl p-5 flex flex-col justify-between items-center text-center h-80"
+          >
+            <div
+              class="flex-1 overflow-y-auto w-full p-2 border border-indigo-300 bg-white rounded-lg shadow-inner flex flex-col"
+            >
+              <p
+                class="text-sm font-bold text-indigo-700 uppercase mb-1 border-b pb-1 border-indigo-200"
+              >
+                Steps to Reproduce
+              </p>
+              <pre
+                id="visualOutputSteps"
+                class="text-sm text-gray-800 text-left report-section whitespace-pre-wrap flex-1 overflow-y-auto"
+              >
+N/A</pre
+              >
+            </div>
+          </div>
+
+          <div
+            id="visualExpected"
+            class="visual-card bg-green-50 rounded-xl p-5 flex flex-col justify-between items-center text-center h-80"
+          >
+            <div
+              class="flex-1 overflow-y-auto w-full p-2 border border-green-300 bg-white rounded-lg shadow-inner flex flex-col"
+            >
+              <p
+                class="text-sm font-bold text-green-700 uppercase mb-1 border-b pb-1 border-green-200"
+              >
+                Expected Behavior
+              </p>
+              <p
+                id="visualOutputExpected"
+                class="text-sm text-gray-800 mt-1 report-section flex-1 overflow-y-auto"
+              >
+                N/A
+              </p>
+            </div>
+            <div
+              class="h-1/3 w-full flex flex-col items-center justify-center pt-2"
+            >
+              <svg
+                viewBox="0 0 100 100"
+                class="w-20 h-20 text-green-600 fill-current"
+              >
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  class="fill-green-400 stroke-green-600 stroke-2"
+                />
+                <circle cx="40" cy="40" r="5" class="fill-green-800" />
+                <circle cx="60" cy="40" r="5" class="fill-green-800" />
+                <path
+                  d="M 30 65 Q 50 85, 70 65"
+                  class="fill-none stroke-green-800 stroke-4"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="mt-8 text-center text-gray-500 text-sm">
+      <p>Developed by Mayur Kumar</p>
+    </footer>
+
+    <script type="module">
+      // =========================================================================
+      // IMPORTANT: API KEY CONFIGURATION
+      // =========================================================================
+      // 1. If running in a secure sandbox (like this one), the API key is injected.
+      // 2. If running locally or on GitHub Pages, you MUST replace the placeholder
+      //    with your actual Gemini API Key to avoid a 403 Forbidden error.
+      // Get your key from the Google AI Studio or Google Cloud Console.
+      const apiKey = "AIzaSyDVntKIxfb_iS2jFncPF505UMRI69J9XX8";
+      // Example for local testing: const apiKey = "YOUR_PERSONAL_GEMINI_API_KEY_HERE";
+
+      // Check if the key is configured and display an error message if it's missing
+      if (!apiKey && typeof __initial_auth_token === "undefined") {
+        console.error(
+          "API Key is missing. Please configure 'const apiKey' in the script."
+        );
+      }
+      // =========================================================================
+
+      const generateBtn = document.getElementById("generateBtn");
+      const bugInput = document.getElementById("bugInput");
+      const loadingSpinner = document.getElementById("loadingSpinner");
+      const generateIcon = document.getElementById("generateIcon");
+      const errorMessage = document.getElementById("errorMessage");
+      const errorText = document.getElementById("errorText");
+
+      // Text Output Elements
+      const outputHeading = document.getElementById("outputHeading");
+      const outputDescription = document.getElementById("outputDescription");
+      const outputSteps = document.getElementById("outputSteps");
+      const outputObserved = document.getElementById("outputObserved");
+      const outputExpected = document.getElementById("outputExpected");
+
+      // Visual Output Elements (New)
+      const visualOutputObserved = document.getElementById(
+        "visualOutputObserved"
+      );
+      const visualOutputSteps = document.getElementById("visualOutputSteps");
+      const visualOutputExpected = document.getElementById(
+        "visualOutputExpected"
+      );
+
+      function setUiState(isLoading, error = null) {
+        generateBtn.disabled = isLoading;
+        loadingSpinner.classList.toggle("hidden", !isLoading);
+        generateIcon.classList.toggle("hidden", isLoading);
+        errorMessage.classList.toggle("hidden", !error);
+        if (error) {
+          errorText.textContent = error;
+        }
+      }
+
+      /**
+       * Clears all input and output fields, resetting the form.
+       */
+      window.resetForm = function () {
+        // Clear input
+        bugInput.value = "";
+
+        // Clear text outputs
+        outputHeading.textContent = "N/A";
+        outputDescription.textContent = "N/A";
+        outputSteps.textContent = "N/A";
+        outputObserved.textContent = "N/A";
+        outputExpected.textContent = "N/A";
+
+        // Clear visual outputs (New)
+        visualOutputObserved.textContent = "N/A";
+        visualOutputSteps.textContent = "N/A";
+        visualOutputExpected.textContent = "N/A";
+
+        // Hide error message and reset button state
+        setUiState(false);
+      };
+
+      /**
+       * Sanitizes text by removing characters that are often unsupported in bug tracking portals.
+       * Removes single quotes ('), double quotes ("), backticks (`), and pipes (|).
+       * Replaces them with empty strings or spaces.
+       * @param {string} text
+       * @returns {string} The sanitized text.
+       */
+      function sanitizeText(text) {
+        if (typeof text !== "string") return text;
+        return text
+          .replace(/['"]/g, "") // Remove single/double quotes
+          .replace(/[|`]/g, " ") // Replace pipe/backtick with space
+          .replace(/\s+/g, " ") // Collapse multiple spaces into one
+          .trim();
+      }
+
+      /**
+       * Copies the content of a target element to the clipboard.
+       * @param {string} targetId The ID of the element whose text content should be copied.
+       */
+      window.copyToClipboard = async function (targetId) {
+        const targetElement = document.getElementById(targetId);
+        // Use innerText for <p> and <pre> elements, which handles line breaks correctly for the steps
+        const textToCopy = targetElement.innerText || targetElement.textContent;
+
+        try {
+          // document.execCommand('copy') is used as a fallback for navigator.clipboard
+          if (!navigator.clipboard || !navigator.clipboard.writeText) {
+            const textarea = document.createElement("textarea");
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+          } else {
+            await navigator.clipboard.writeText(textToCopy);
+          }
+
+          // Simple visual feedback on the button
+          const button = document.querySelector(
+            `[onclick="copyToClipboard('${targetId}')"]`
+          );
+          const originalTitle = button.title;
+          const originalSvg = button.innerHTML;
+
+          // Show checkmark icon temporarily
+          button.title = "Copied!";
+          button.innerHTML =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-green-500"><path d="M20 6L9 17l-5-5"></path></svg>';
+
+          setTimeout(() => {
+            button.title = originalTitle;
+            button.innerHTML = originalSvg;
+          }, 1500);
+        } catch (err) {
+          console.error("Failed to copy text: ", err);
+          // Fallback message for copy failure
+          errorText.textContent =
+            "Copy failed. Clipboard access denied or restricted.";
+          errorMessage.classList.remove("hidden");
+          setTimeout(() => {
+            errorMessage.classList.add("hidden");
+          }, 3000);
+        }
+      };
+
+      /**
+       * Downloads the visual output container as a PNG image using html2canvas.
+       */
+      window.downloadVisualReport = async function () {
+        const visualContainer = document.getElementById("visualContainer");
+        const downloadBtn = document.getElementById("downloadBtn");
+
+        // Prevent download if no report has been generated
+        if (
+          visualOutputObserved.textContent === "N/A" ||
+          visualOutputObserved.textContent === "Generating..."
+        ) {
+          setUiState(
+            false,
+            "Please generate a bug report first before downloading."
+          );
+          return;
+        }
+
+        downloadBtn.disabled = true;
+        const originalText = downloadBtn.textContent;
+        downloadBtn.textContent = "Preparing...";
+
+        try {
+          // Use html2canvas to render the container div
+          const canvas = await html2canvas(visualContainer, {
+            scale: 2, // Higher scale for better quality
+            useCORS: true,
+            backgroundColor: "#ffffff", // Ensure white background is used instead of transparent
+          });
+
+          // Convert canvas to image data URL
+          const imageURL = canvas.toDataURL("image/png");
+
+          // Create a temporary link element to trigger the download
+          const link = document.createElement("a");
+          link.href = imageURL;
+
+          // Generate filename based on heading or a default
+          const filename =
+            (
+              outputHeading.textContent.replace(/\s/g, "_").substring(0, 50) ||
+              "Bug_Report_Visual"
+            ).replace(/[^a-zA-Z0-9_]/g, "") + ".png";
+
+          link.download = filename;
+
+          // Append to body, click it, and remove it
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          downloadBtn.textContent = "Download Complete!";
+          setTimeout(() => {
+            downloadBtn.textContent = originalText;
+            downloadBtn.disabled = false;
+          }, 2000);
+        } catch (error) {
+          console.error("Error rendering or downloading image:", error);
+          setUiState(
+            false,
+            `Failed to download image. Error: ${error.message}`
+          );
+          downloadBtn.textContent = originalText;
+          downloadBtn.disabled = false;
+        }
+      };
+
+      // This function will automatically detect the game name and structure the bug report
+      window.generateBugReport = async function () {
+        const rawInput = bugInput.value.trim();
+
+        if (!apiKey && typeof __initial_auth_token === "undefined") {
+          setUiState(
+            false,
+            "API Key is missing. Please configure 'const apiKey' in the script to run this tool outside of the development environment."
+          );
+          return;
+        }
+        if (!rawInput) {
+          setUiState(
+            false,
+            "Please enter a bug description to generate the report."
+          );
+          return;
+        }
+
+        setUiState(true);
+        // Set all elements to 'Generating...'
+        [
+          outputHeading,
+          outputDescription,
+          outputSteps,
+          outputObserved,
+          outputExpected,
+          visualOutputObserved,
+          visualOutputSteps,
+          visualOutputExpected,
+        ].forEach((el) => {
+          el.textContent = "Generating...";
+        });
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+        // Define the strict JSON schema for the output
+        const responseSchema = {
+          type: "OBJECT",
+          properties: {
+            heading: {
+              type: "STRING",
+              description:
+                "A concise, single-line heading for the bug report (max 10 words).",
+            },
+            description: {
+              type: "STRING",
+              description:
+                "A small, detailed description in proper English (max 3 sentences).",
+            },
+            stepsToReproduce: {
+              type: "STRING",
+              description:
+                "A numbered list of steps, starting with the mandatory preamble, and ending with specific steps derived from the input. Use '\\n' for line breaks. The preamble is: '1. Open JioGames\\n2. Go to Instant Games\\n3. Search for \"[Game Name]\"\\n4. Open that game'.",
+            },
+            observedBehavior: {
+              type: "STRING",
+              description:
+                "A clear description of the current, incorrect behavior.",
+            },
+            expectedBehavior: {
+              type: "STRING",
+              description:
+                "A clear description of the correct, expected behavior.",
+            },
+          },
+          required: [
+            "heading",
+            "description",
+            "stepsToReproduce",
+            "observedBehavior",
+            "expectedBehavior",
+          ],
+          propertyOrdering: [
+            "heading",
+            "description",
+            "stepsToReproduce",
+            "observedBehavior",
+            "expectedBehavior",
+          ],
+        };
+
+        const systemPrompt = `You are a Senior QA Analyst and Technical Writer. Your task is to convert a raw bug description into a structured, formal bug report for a mobile gaming platform (JioGames).
+           
+            1. Analyze the user's input to identify the game name, the incorrect scenario (Observed Behavior), and the desired outcome (Expected Behavior).
+            2. The 'stepsToReproduce' field MUST start with the following mandatory preamble (use the identified Game Name or [Specific Game] if none is mentioned):
+               1. Open JioGames
+               2. Go to Instant Games
+               3. Search for "[Game Name/Specific Game]"
+               4. Open that game
+            3. Append the specific steps needed to trigger the bug to the end of the mandatory preamble. Ensure all steps are numbered sequentially.
+            4. Output the result ONLY as a single JSON object conforming strictly to the provided schema. Do not include any text outside the JSON object.`;
+
+        const payload = {
+          contents: [{ parts: [{ text: rawInput }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: responseSchema,
+          },
+        };
+
+        const maxRetries = 3;
+        let delay = 1000;
+
+        for (let i = 0; i < maxRetries; i++) {
+          try {
+            const response = await fetch(apiUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            const jsonString =
+              result?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!jsonString) {
+              throw new Error("API response was empty or malformed.");
+            }
+
+            const bugReport = JSON.parse(jsonString);
+
+            // Sanitize the text outputs before displaying
+            const sanitizedHeading = sanitizeText(bugReport.heading || "N/A");
+            const sanitizedDescription = sanitizeText(
+              bugReport.description || "N/A"
+            );
+            // Removed sanitizeText for stepsToReproduce here to preserve line breaks
+            const rawSteps = bugReport.stepsToReproduce.trim() || "N/A";
+            const sanitizedObserved = sanitizeText(
+              bugReport.observedBehavior || "N/A"
+            );
+            const sanitizedExpected = sanitizeText(
+              bugReport.expectedBehavior || "N/A"
+            );
+
+            // Update UI with data (Text Output)
+            outputHeading.textContent = sanitizedHeading;
+            outputDescription.textContent = sanitizedDescription;
+            outputSteps.textContent = rawSteps; // Use raw steps to keep line breaks
+            outputObserved.textContent = sanitizedObserved;
+            outputExpected.textContent = sanitizedExpected;
+
+            // Update UI with data (Visual Template Output)
+            visualOutputObserved.textContent = sanitizedObserved;
+            visualOutputSteps.textContent = rawSteps; // Use raw steps to keep line breaks
+            visualOutputExpected.textContent = sanitizedExpected;
+
+            setUiState(false);
+            return; // Success, exit function
+          } catch (error) {
+            console.error("Attempt failed:", error);
+            if (i < maxRetries - 1) {
+              await new Promise((resolve) => setTimeout(resolve, delay));
+              delay *= 2; // Exponential backoff
+            } else {
+              setUiState(
+                false,
+                `Failed to generate report after ${maxRetries} attempts. Please check your input or try again later. Details: ${error.message}`
+              );
+            }
+          }
+        }
+      };
+    </script>
+  </body>
+</html>
