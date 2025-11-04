@@ -586,7 +586,7 @@ N/A</pre
     </div>
 
     <footer class="mt-8 text-center text-gray-500 text-sm">
-      <p>Developed by Mayur Kumar</p>
+      <!-- <p>Developed by Mayur Kumar</p> -->
     </footer>
 
     <script type="module">
@@ -908,7 +908,7 @@ N/A</pre
             stepsToReproduce: {
               type: "STRING",
               description:
-                "A numbered list of steps, starting with the mandatory preamble, and ending with specific steps derived from the input. Use '\\n' for line breaks. The preamble is: '1. Open JioGames\\n2. Go to Instant Games\\n3. Search for \"[Game Name]\"\\n4. Open that game'.",
+                "A numbered list of steps, starting with the mandatory preamble, and ending with specific steps derived from the input. Use '\\n' for line breaks. The preamble is: '1. Open \"[Game Name/Specific Game]\" game'.",
             },
             observedBehavior: {
               type: "STRING",
@@ -954,12 +954,9 @@ N/A</pre
         const systemPrompt = `You are a Senior QA Analyst and Technical Writer. Your task is to convert a raw bug description into a structured, formal bug report for a mobile gaming platform (JioGames).
            
             1. Analyze the user's input to identify the game name, the incorrect scenario (Observed Behavior), and the desired outcome (Expected Behavior).
-            2. The 'stepsToReproduce' field MUST start with the following mandatory preamble (use the identified Game Name or [Specific Game] if none is mentioned):
-               1. Open JioGames
-               2. Go to Instant Games
-               3. Search for "[Game Name/Specific Game]"
-               4. Open that game
-            3. Append the specific steps needed to trigger the bug to the end of the mandatory preamble. Ensure all steps are numbered sequentially.
+            2. The 'stepsToReproduce' field MUST start with the following mandatory preamble (use the identified Game Name or '[Specific Game]' if none is mentioned):
+               1. Open "[Game Name/Specific Game]" game
+            3. Append the specific steps needed to trigger the bug to the end of the mandatory preamble. Ensure all steps are numbered sequentially, starting from 1.
             4. Output the result ONLY as a single JSON object conforming strictly to the provided schema. Do not include any text outside the JSON object.`;
 
         const payload = {
