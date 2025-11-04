@@ -586,21 +586,13 @@ N/A</pre
     </div>
 
     <footer class="mt-8 text-center text-gray-500 text-sm">
-      <!-- <p>Developed by Mayur Kumar</p> -->
+      <!-- <p>Developed by Yash Garg </p> -->
     </footer>
 
     <script type="module">
-      // =========================================================================
-      // IMPORTANT: API KEY CONFIGURATION
-      // =========================================================================
-      // 1. If running in a secure sandbox (like this one), the API key is injected.
-      // 2. If running locally or on GitHub Pages, you MUST replace the placeholder
-      //    with your actual Gemini API Key to avoid a 403 Forbidden error.
-      // Get your key from the Google AI Studio or Google Cloud Console.
+      // ================== API KEY CONFIGURATION ==================
       const apiKey = "AIzaSyDVntKIxfb_iS2jFncPF505UMRI69J9XX8";
-      // Example for local testing: const apiKey = "YOUR_PERSONAL_GEMINI_API_KEY_HERE";
 
-      // Check if the key is configured and display an error message if it's missing
       if (!apiKey && typeof __initial_auth_token === "undefined") {
         console.error(
           "API Key is missing. Please configure 'const apiKey' in the script."
@@ -690,7 +682,6 @@ N/A</pre
         const textToCopy = targetElement.innerText || targetElement.textContent;
 
         try {
-          // document.execCommand('copy') is used as a fallback for navigator.clipboard
           if (!navigator.clipboard || !navigator.clipboard.writeText) {
             const textarea = document.createElement("textarea");
             textarea.value = textToCopy;
